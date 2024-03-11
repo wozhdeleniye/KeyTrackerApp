@@ -6,6 +6,7 @@ import com.example.filmushits.Etities.RequestBodies.LoginRequestBody
 import com.example.filmushits.Etities.RequestBodies.RegisterRequestBody
 import com.example.filmushits.Network.Auth.AuthRepository
 import com.example.filmushits.Network.Network
+import com.example.keytrackerapp.domain.UseCases.AuthUseCases.LogOutUseCase
 import com.example.keytrackerapp.domain.UseCases.AuthUseCases.LoginUseCase
 import com.example.keytrackerapp.domain.UseCases.AuthUseCases.RegisterUseCase
 import kotlinx.coroutines.Job
@@ -26,6 +27,14 @@ class AuthViewModel: ViewModel() {
             val result = LoginUseCase(AuthRepository(Network.getInstance().getAuthApi())).invoke(loginData)
             if (result.isSuccess) {
                 Network.getInstance().getTokenManager().setToken(result.getOrNull()!!.token)
+            }
+            else cancel()
+        }
+    }
+    fun logout(): Job {
+        return viewModelScope.launch {
+            val result = LogOutUseCase(AuthRepository(Network.getInstance().getAuthApi())).invoke()
+            if (result.isSuccess) {
             }
             else cancel()
         }

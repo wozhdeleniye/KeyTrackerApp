@@ -29,8 +29,10 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.filmushits.Etities.RequestBodies.LoginRequestBody
 import com.example.keytrackerapp.R
 import com.example.keytrackerapp.View.AppScreen.RequestList.bottomBorder
+import com.example.keytrackerapp.View.LogRegScreen.AuthViewModel
 import com.example.keytrackerapp.domain.Entities.Models.ProfileModel
 import com.example.keytrackerapp.ui.theme.AddRequestContent
 import com.example.keytrackerapp.ui.theme.AddRequestHeader
@@ -38,6 +40,7 @@ import com.example.keytrackerapp.ui.theme.AddRequestHeader
 @Composable
 fun ProfileScreen(navController: NavHostController) {
     val profileViewModel: ProfileViewModel = viewModel()
+    val authViewModel: AuthViewModel = viewModel()
 
     var profileData by remember { mutableStateOf<ProfileModel?>(null) }
 
@@ -87,7 +90,12 @@ fun ProfileScreen(navController: NavHostController) {
                         alignment = Alignment.TopStart,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.clickable {
-                            //navController.navigate("AppScreen")
+                            val job = authViewModel.logout()
+                            job.invokeOnCompletion {
+                                if (!job.isCancelled) {
+
+                                }
+                            }
                         })
                 }
             }

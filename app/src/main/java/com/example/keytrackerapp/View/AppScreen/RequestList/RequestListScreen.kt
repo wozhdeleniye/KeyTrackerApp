@@ -151,7 +151,10 @@ fun RequestItem(req: ReqModel, navController: NavHostController){
         }){
         RequestItemText(text = "Деканат: " + req.name)
         RequestItemText(text = "Аудитория: " + req.number)
-        RequestItemText(text = "Время: " + req.requestedDateTime)
+
+        val (date, time) = convertDateTimeFormat(req.requestedDateTime)
+        RequestItemText(text = "Дата: " + date)
+        RequestItemText(text = "Время: " + time)
         RequestItemText(text = "Статус: " + req.status)
     }
 }
@@ -174,3 +177,34 @@ fun Modifier.bottomBorder(strokeWidth: Dp, color: Color) = composed(
         }
     }
 )
+fun convertDateTimeFormat(dateTimeString: String): Pair<String, String> {
+    val parts = dateTimeString.split("T")
+    if (parts.size != 2) {
+        return Pair("Неверный формат даты и времени", "")
+    }
+
+    val datePart = parts[0]
+    val timePart = parts[1]
+
+    val dateParts = datePart.split("-")
+    if (dateParts.size != 3) {
+        return Pair("Неверный формат даты", "")
+    }
+
+    val year = dateParts[0]
+    val month = dateParts[1]
+    val day = dateParts[2]
+
+    val timeParts = timePart.split(":")
+    if (timeParts.size != 3) {
+        return Pair("Неверный формат времени", "")
+    }
+
+    val hour = timeParts[0]
+    val minute = timeParts[1]
+
+    val dateOutput = "$day.$month.$year"
+    val timeOutput = "$hour:$minute"
+
+    return Pair(dateOutput, timeOutput)
+}
