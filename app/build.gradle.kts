@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId = "com.example.keytrackerapp"
         minSdk = 30
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -51,9 +51,9 @@ android {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation("androidx.activity:activity-compose:1.8.0")
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.activity:activity-compose:1.8.2")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
@@ -67,13 +67,13 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
-    implementation("androidx.navigation:navigation-compose:2.7.4")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
     val composeBom = platform("androidx.compose:compose-bom:2023.10.01")
     implementation(composeBom)
     debugImplementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("com.maxkeppeler.sheets-compose-dialogs:calendar:1.2.0")
-    implementation ("androidx.compose.material3:material3:1.1.2")
+    implementation ("androidx.compose.material3:material3:1.2.1")
     implementation ("com.google.accompanist:accompanist-pager:0.27.1")
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -81,12 +81,12 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.10")
     implementation("com.squareup.retrofit2:converter-moshi:2.4.0")
 
-    implementation("androidx.navigation:navigation-compose:2.7.5")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
     implementation("androidx.datastore:datastore:1.0.0")
 
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation("androidx.security:security-crypto:1.1.0-alpha01")
 
     implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
 }

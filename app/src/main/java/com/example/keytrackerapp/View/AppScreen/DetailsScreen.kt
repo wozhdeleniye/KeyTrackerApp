@@ -30,12 +30,13 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import androidx.navigation.NavHostController
 import com.example.keytrackerapp.R
+import com.example.keytrackerapp.View.AppScreen.RequestList.bottomBorder
 import com.example.keytrackerapp.ui.theme.AddRequestContent
 import com.example.keytrackerapp.ui.theme.AddRequestHeader
 import com.example.keytrackerapp.ui.theme.TextButtonLabel
 
 @Composable
-fun DetailsScreen(navController: NavHostController) {
+fun DetailsScreen(navController: NavHostController, id: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxHeight()) {
@@ -68,45 +69,6 @@ fun DetailsScreen(navController: NavHostController) {
                     )
                 }
             }
-            Card(
-                border = BorderStroke(1.dp, Color.Black),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color("#D8ECFF".toColorInt())
-                )
-            ){
-                Column(
-                    Modifier
-                        .fillMaxWidth(0.95f)
-                        .padding(12.dp)) {
-                    AddRequestHeader(text = "Бронь на имя:")
-                    AddRequestContent(text = "Гальперина Екатерина Асимовна")
-                    AddRequestHeader(text = "Дата:")
-                    AddRequestContent(text = "29.09.2024 08:45")
-                    AddRequestHeader(text = "Номер пары:")
-                    AddRequestContent(text = "29.09.2024 08:45")
-                    AddRequestHeader(text = "Номер кабинета:")
-                    AddRequestContent(text = "215")
-                }
-            }
-            TextButton(modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .background(
-                    color = Color("#188DFE".toColorInt()),
-                    shape = RoundedCornerShape(size = 10.dp)
-                )
-                .padding(0.dp),
-                onClick = {
-                    //navController.navigate("AppScreen")
-                    /*if (fillCheckerLog(username, password)) {
-                        val job = loginViewModel.login(LoginRequestBody(username, password))
-                        job.invokeOnCompletion {
-                            if (!job.isCancelled) navController.navigate("AppScreen")
-                        }
-                    }*/
-                }
-            ){
-                TextButtonLabel(text = "Вернуть ключ в деканат")
-            }
             TextButton(modifier = Modifier
                 .fillMaxWidth(0.9f)
                 .background(
@@ -115,13 +77,7 @@ fun DetailsScreen(navController: NavHostController) {
                 )
                 .padding(0.dp),
                 onClick = {
-                    //navController.navigate("AppScreen")
-                    /*if (fillCheckerLog(username, password)) {
-                        val job = loginViewModel.login(LoginRequestBody(username, password))
-                        job.invokeOnCompletion {
-                            if (!job.isCancelled) navController.navigate("AppScreen")
-                        }
-                    }*/
+                    navController.navigate("TransitScreen/${id}")
                 }
             ){
                 TextButtonLabel(text = "Передать ключ")

@@ -88,6 +88,21 @@ fun RequestItemText(text: String){
     )
 }
 @Composable
+fun RequestItemTextBlack(text: String){
+    Text(
+        text = text,
+        // 15 M Label
+        style = TextStyle(
+            fontSize = 18.sp,
+            fontFamily = FontFamily(Font(R.font.inter)),
+            fontWeight = FontWeight(500),
+            color = Color("#000000".toColorInt()),
+
+            textAlign = TextAlign.Center,
+        )
+    )
+}
+@Composable
 fun AddRequestHeader(text: String){
     Text(
         text = text,
@@ -112,7 +127,7 @@ fun AddRequestContent(text: String){
             fontSize = 18.sp,
             fontFamily = FontFamily(Font(R.font.inter)),
             fontWeight = FontWeight(400),
-            color = Color("#000000".toColorInt()),
+            color = Color("#188DFE".toColorInt()),
 
             textAlign = TextAlign.Start,
         )

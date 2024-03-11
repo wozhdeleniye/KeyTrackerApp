@@ -40,13 +40,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.filmushits.Etities.RequestBodies.LoginRequestBody
 import com.example.keytrackerapp.R
 import com.example.keytrackerapp.ui.theme.TextButtonLabel
 import com.example.keytrackerapp.ui.theme.TextLabel
 
 @Composable
 fun LogScreen(navController: NavHostController) {
+    val loginViewModel: AuthViewModel = viewModel()
+
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -161,13 +165,14 @@ fun LogScreen(navController: NavHostController) {
                         )
                         .padding(0.dp),
                         onClick = {
-                            navController.navigate("AppScreen")
-                            /*if (fillCheckerLog(username, password)) {
+                            //navController.navigate("AppScreen")
+                            if (fillCheckerLog(username, password)) {
                                 val job = loginViewModel.login(LoginRequestBody(username, password))
                                 job.invokeOnCompletion {
-                                    if (!job.isCancelled) navController.navigate("AppScreen")
+                                    if (!job.isCancelled)
+                                        navController.navigate("AppScreen")
                                 }
-                            }*/
+                            }
                         }
                     ){
                         TextButtonLabel(text = "Вход")
@@ -176,7 +181,10 @@ fun LogScreen(navController: NavHostController) {
                 Box(){
                     Text(
                         text = "Забыли пароль?",
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth()
+                            .clickable {
+                                navController.navigate("AppScreen")
+                            },
                         style = TextStyle(
                             fontSize = 18.sp,
                             fontFamily = FontFamily(Font(R.font.inter)),

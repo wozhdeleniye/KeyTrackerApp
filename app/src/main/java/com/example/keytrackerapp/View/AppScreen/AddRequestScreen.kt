@@ -1,46 +1,35 @@
 package com.example.keytrackerapp.View.AppScreen
 
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Button
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,21 +41,53 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.keytrackerapp.R
+import com.example.keytrackerapp.View.AppScreen.RequestList.RequestList
+import com.example.keytrackerapp.View.AppScreen.RequestList.RequestListViewModel
+import com.example.keytrackerapp.View.AppScreen.RequestList.bottomBorder
+import com.example.keytrackerapp.View.AppScreen.UserProfile.ProfileViewModel
+import com.example.keytrackerapp.domain.Entities.Models.KeyListModel
+import com.example.keytrackerapp.domain.Entities.Models.KeyModel
+import com.example.keytrackerapp.domain.Entities.Models.ProfileModel
+import com.example.keytrackerapp.domain.Entities.Models.ReqModel
+import com.example.keytrackerapp.domain.Entities.RequestBodies.CreateReqBody
 import com.example.keytrackerapp.ui.theme.AddRequestContent
 import com.example.keytrackerapp.ui.theme.AddRequestHeader
 import com.example.keytrackerapp.ui.theme.TextButtonLabel
-import kotlinx.coroutines.flow.MutableStateFlow
+import java.time.LocalDate
 
 @Composable
 fun AddRequestScreen(navController: NavHostController) {
     var expanded by remember { mutableStateOf(false) }
     var selectedNumber by remember { mutableStateOf(1) }
+    var selectedOffice by remember { mutableStateOf("") }
+    var selectedId by remember { mutableStateOf("") }
+
+    val profileViewModel: ProfileViewModel = viewModel()
+    val requestViewModel: RequestListViewModel = viewModel()
+
+    var keys by remember { mutableStateOf<List<KeyModel>?>(null)}
+
+    var profileData by remember { mutableStateOf<ProfileModel?>(null) }
+
+    var fullname by remember { mutableStateOf("")}
+    var login by remember { mutableStateOf("")}
+    var role by remember { mutableStateOf("")}
+
+    LaunchedEffect(Unit) {
+        profileData = profileViewModel.getProfile().await()
+        fullname = profileData?.fullname ?: ""
+        login = profileData?.login ?: ""
+        role = profileData?.role ?: ""
+        keys = requestViewModel.getKeyList().await()?.keys ?: emptyList()
+    }
+
+    var username by rememberSaveable { mutableStateOf("") }
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxHeight()) {
@@ -109,12 +130,34 @@ fun AddRequestScreen(navController: NavHostController) {
                         .fillMaxWidth(0.95f)
                         .padding(12.dp)) {
                     AddRequestHeader(text = "Бронь на имя:")
-                    AddRequestContent(text = "Гальперина Екатерина Асимовна")
-                    AddRequestHeader(text = "Бронь на имя:")
-                    AddRequestContent(text = "Гальперина Екатерина Асимовна")
+                    AddRequestContent(text = fullname)
+                    AddRequestHeader(text = "Дата:")
+                    OutlinedTextField(
+                        value = username,
+                        onValueChange = {
+                            username = it
+                        },
+                        placeholder = {
+                            Text("dd.mm.yyyy")
+                        },
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(10.dp),
+                        textStyle = TextStyle(
+                            color = Color("#8C9195".toColorInt())
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color("#8C9195".toColorInt()),
+                            unfocusedBorderColor = Color("#8C9195".toColorInt())
+                        )
+                    )
                     AddRequestHeader(text = "Номер пары:")
                     DropDownMenu(onValueChange = { number -> selectedNumber = number })
                     AddRequestHeader(text = "Номер кабинета:")
+                    if (keys != null && keys!!.isNotEmpty()) {
+                        DropDownMenuRoom(keys = keys!!, onValueChange = {office -> selectedOffice = office}, onValueChangeId = { keyId -> selectedId = keyId})
+                    }
                 }
             }
             TextButton(modifier = Modifier
@@ -125,19 +168,24 @@ fun AddRequestScreen(navController: NavHostController) {
                 )
                 .padding(0.dp),
                 onClick = {
-                    navController.navigate("AppScreen")
-                    /*if (fillCheckerLog(username, password)) {
-                        val job = loginViewModel.login(LoginRequestBody(username, password))
-                        job.invokeOnCompletion {
-                            if (!job.isCancelled) navController.navigate("AppScreen")
-                        }
-                    }*/
+                    var dateTime = convertDateFormat(username)
+                    if(selectedNumber == 1) dateTime += "T08:45:00"
+                    else if(selectedNumber == 2) dateTime += "T10:35:00"
+                    else if(selectedNumber == 3) dateTime += "T12:25:00"
+                    else if(selectedNumber == 4) dateTime += "T14:45:00"
+                    else if(selectedNumber == 5) dateTime += "T16:35:00"
+                    else if(selectedNumber == 6) dateTime += "T18:25:00"
+                    else if(selectedNumber == 7) dateTime += "T20:15:00"
+                    val job = requestViewModel.createReq(CreateReqBody(dateTime, selectedId, selectedOffice))
+                    job.invokeOnCompletion {
+                        if (!job.isCancelled) navController.navigate("AppScreen")
+                    }
                 }
             ){
                 TextButtonLabel(text = "Создать заявку")
             }
         }
-        Text("еонец")
+        Text("")
     }
 }
 @Composable
@@ -151,24 +199,7 @@ fun DropDownMenu(onValueChange: (Int) -> Unit) {
             .wrapContentSize(Alignment.TopStart)
     ) {
         Row {
-            /*OutlinedTextField(
-                value = currentValue.toString(),
-                onValueChange = {
-                },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                shape = RoundedCornerShape(10.dp),
-                textStyle = TextStyle(
-                    color = Color("#8C9195".toColorInt())
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color("#8C9195".toColorInt()),
-                    unfocusedBorderColor = Color("#8C9195".toColorInt())
-                ),
-
-            )*/
-            AddRequestContent(text = currentValue.toString())
+            AddRequestContent(text = textReturner(currentValue))
             Box(Modifier.clickable { expanded = !expanded }){
                 Image(painter = painterResource(id = R.drawable.menu_icon),
                     contentDescription = null,
@@ -194,8 +225,73 @@ fun DropDownMenu(onValueChange: (Int) -> Unit) {
 @Composable
 fun MenuItem(onValueChange: (Int) -> Unit, i: Int){
     DropdownMenuItem(
-        text = { Text(i.toString()) },
+        text = { Text(textReturner(i)) },
         onClick = { onValueChange(i)}
     )
 }
+
+fun textReturner(i: Int): String{
+    var a = "8:45-10:20"
+    if (i == 2) a = "10:35-12:10"
+    else if (i == 3) a = "12:25-14:00"
+    else if (i == 4) a = "14:45-16:20"
+    else if (i == 5) a = "16:35-18:10"
+    else if (i == 6) a = "18:25-20:00"
+    else if (i == 7) a = "20:15-20:50"
+    return "Пара: " + i.toString() + " (" + a + ")"
+}
+@Composable
+fun DropDownMenuRoom(keys: List<KeyModel>, onValueChange: (String) -> Unit, onValueChangeId: (String) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    var officeNumber by remember { mutableStateOf(keys[0].officeNumber) }
+    var officeName by remember { mutableStateOf(keys[0].officeName) }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentSize(Alignment.TopStart)
+    ) {
+        Row {
+            AddRequestContent(text = officeNumber.toString() + ", " + officeName )
+            Box(Modifier.clickable { expanded = !expanded }){
+                Image(painter = painterResource(id = R.drawable.menu_icon),
+                    contentDescription = null,
+                    alignment = Alignment.Center,
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            //modifier = Modifier.verticalScroll(rememberScrollState())
+        ) {
+            keys.forEach { key->
+                DropdownMenuItem(
+                    text = { key.officeNumber.toString() + ", " + key.officeName },
+                    onClick = {
+                        onValueChange(key.officeID)
+                        onValueChangeId(key.keyId)
+                        officeName = key.officeName
+                        officeNumber = key.officeNumber
+                    }
+                )
+            }
+        }
+    }
+}
+
+fun convertDateFormat(dateString: String): String {
+    val parts = dateString.split(".")
+    if (parts.size != 3) {
+        return "Неверный формат даты"
+    }
+
+    val day = parts[0]
+    val month = parts[1]
+    val year = parts[2]
+
+    return "$year-$month-$day"
+}
+
+
 

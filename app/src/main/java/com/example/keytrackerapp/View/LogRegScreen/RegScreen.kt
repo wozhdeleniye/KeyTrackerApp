@@ -38,7 +38,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.filmushits.Etities.RequestBodies.RegisterRequestBody
 import com.example.keytrackerapp.R
 import com.example.keytrackerapp.ui.theme.TextButtonLabel
 import com.example.keytrackerapp.ui.theme.TextLabel
@@ -48,6 +50,8 @@ import androidx.compose.ui.tooling.preview.Preview as Preview1
 @Composable
 @Preview1
 fun RegScreen(navController: NavHostController) {
+    val regViewModel: AuthViewModel = viewModel()
+
     var fio by rememberSaveable {mutableStateOf("")}
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -191,13 +195,13 @@ fun RegScreen(navController: NavHostController) {
                     )
                     .padding(0.dp),
                     onClick = {
-                        navController.navigate("AppScreen")
-                        /*if (fillCheckerLog(username, password)) {
-                            val job = loginViewModel.login(LoginRequestBody(username, password))
+                        //navController.navigate("AppScreen")
+                        if (fillCheckerLog(username, password)) {
+                            val job = regViewModel.register(RegisterRequestBody(fio, username, password))
                             job.invokeOnCompletion {
                                 if (!job.isCancelled) navController.navigate("AppScreen")
                             }
-                        }*/
+                        }
                     }
                 ){
                     TextButtonLabel(text = "Регистрация")
